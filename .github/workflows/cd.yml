@@ -7,6 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  IMAGE_OWNER: nikhil-712
   IMAGE_NAME: developer-productivity-dashboard
 
 jobs:
@@ -38,7 +39,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:latest
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v4
@@ -57,7 +58,7 @@ jobs:
         env:
           REGISTRY: ${{ env.REGISTRY }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
-          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_OWNER: ${{ env.IMAGE_OWNER }}
         run: |
           kubectl apply -f kubernetes/frontend-deployment.yaml
           kubectl apply -f kubernetes/frontend-service.yaml
