@@ -5,20 +5,28 @@ function AddTask({ onAddTask }) {
   const [priority, setPriority] = useState('Medium');
   const [category, setCategory] = useState('Development');
   const [dueDate, setDueDate] = useState('');
+  const [tagsInput, setTagsInput] = useState('');
 
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!text.trim()) return;
+
+    const tags = tagsInput
+      .split(',')
+      .map((tag) => tag.trim())
+      .filter(Boolean);
 
     onAddTask({
       text,
       priority,
       category,
       dueDate,
+      tags,
     });
 
     setText('');
     setDueDate('');
+    setTagsInput('');
   };
 
   return (
@@ -73,6 +81,17 @@ function AddTask({ onAddTask }) {
             type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
+          />
+        </div>
+
+        <div className="field-group">
+          <label htmlFor="task-tags">Tags (comma separated)</label>
+          <input
+            id="task-tags"
+            type="text"
+            value={tagsInput}
+            onChange={(e) => setTagsInput(e.target.value)}
+            placeholder="DevOps, Deployment"
           />
         </div>
       </div>

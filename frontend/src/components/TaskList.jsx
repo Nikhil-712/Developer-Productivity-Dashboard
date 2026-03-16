@@ -1,17 +1,25 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import TaskItem from './TaskItem.jsx';
+import CollapsibleTaskSection from './CollapsibleTaskSection.jsx';
 
 function TaskList({
   tasks,
   onToggleTask,
   onDeleteTask,
+  onUpdateTask,
   searchQuery,
   statusFilter,
   categoryFilter,
+  sortBy,
+  viewMode,
   onSearchChange,
   onStatusFilterChange,
   onCategoryFilterChange,
+  onSortByChange,
+  onViewModeChange,
 }) {
+  const [expandedSections, setExpandedSections] = useState({});
+
   const normalizedQuery = searchQuery.trim().toLowerCase();
 
   const filteredTasks = tasks.filter((task) => {
@@ -29,6 +37,46 @@ function TaskList({
 
     return matchesSearch && matchesStatus && matchesCategory;
   });
+
+  const priorityWeight = (priority) => {
+    if (priority === 'High') return 0;
+    if (priority === 'Medium') return 1;
+    if (priority === 'Low') return 2;
+    return 3;
+  };
+
+  const sortedTasks = [...filteredTasks];
+
+  if (sortBy === 'Priority') {
+    sortedTasks.sort((a, b) => {
+      return priorityWeight(a.priority) - priorityWeight(b.priority);
+    });
+  }
+
+  const categoriesOrder = [
+    'Development',
+    'Bug Fix',
+    'Deployment',
+    'Documentation',
+    'Other',
+  ];
+
+  const groupedByCategory = useMemo(() => {
+    const groups = new Map();
+    sortedTasks.forEach((task) => {
+      const key = task.category || 'Other';
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(task);
+    });
+    return groups;
+  }, [sortedTasks]);
+
+  const allCategories = useMemo(() => {
+    const dynamic = Array.from(groupedByCategory.keys()).filter(
+      (c) => !categoriesOrder.includes(c)
+    );
+    return [...categoriesOrder, ...dynamic].filter((c) => groupedByCategory.has(c));
+  }, [groupedByCategory]);
 
   const hasTasks = tasks.length > 0;
 
@@ -75,26 +123,78 @@ function TaskList({
               <option value="Other">Other</option>
             </select>
           </div>
+
+          <div className="field-group">
+            <label htmlFor="sort-by">Sort By</label>
+            <select
+              id="sort-by"
+              value={sortBy}
+              onChange={(e) => onSortByChange(e.target.value)}
+            >
+              <option value="None">None</option>
+              <option value="Priority">Priority</option>
+            </select>
+          </div>
+
+          <div className="field-group">
+            <label htmlFor="view-mode">View</label>
+            <select
+              id="view-mode"
+              value={viewMode}
+              onChange={(e) => onViewModeChange(e.target.value)}
+            >
+              <option value="list">List</option>
+              <option value="card">Card</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      {!filteredTasks.length ? (
+      {!sortedTasks.length ? (
         <p className="empty-state">
           {hasTasks
             ? 'No tasks match your search and filters.'
             : 'No tasks yet. Add your first task!'}
         </p>
       ) : (
-        <ul className="task-list">
-          {filteredTasks.map((task) => (
-            <TaskItem
-              key={task.id}
-              task={task}
-              onToggle={onToggleTask}
-              onDelete={onDeleteTask}
-            />
-          ))}
-        </ul>
+        <div className={viewMode === 'card' ? 'task-list-cards' : ''}>
+          {allCategories.map((category) => {
+            const tasksForCategory = groupedByCategory.get(category) || [];
+            const isExpanded =
+              expandedSections[category] !== undefined
+                ? expandedSections[category]
+                : true;
+
+            const toggleSection = () => {
+              setExpandedSections((prev) => ({
+                ...prev,
+                [category]: !isExpanded,
+              }));
+            };
+
+            return (
+              <CollapsibleTaskSection
+                key={category}
+                category={category}
+                tasks={tasksForCategory}
+                isExpanded={isExpanded}
+                onToggle={toggleSection}
+              >
+                <ul className={viewMode === 'card' ? 'task-list card-view' : 'task-list'}>
+                  {tasksForCategory.map((task) => (
+                    <TaskItem
+                      key={task.id}
+                      task={task}
+                      onToggle={onToggleTask}
+                      onDelete={onDeleteTask}
+                      onUpdate={onUpdateTask}
+                    />
+                  ))}
+                </ul>
+              </CollapsibleTaskSection>
+            );
+          })}
+        </div>
       )}
     </div>
   );
