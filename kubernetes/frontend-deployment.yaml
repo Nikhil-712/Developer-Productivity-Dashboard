@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: developer-productivity-frontend
+  labels:
+    app: developer-productivity-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: developer-productivity-frontend
+  template:
+    metadata:
+      labels:
+        app: developer-productivity-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/developer-productivity-dashboard:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
