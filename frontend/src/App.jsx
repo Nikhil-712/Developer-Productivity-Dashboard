@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import Header from './components/Header.jsx';
-import AddTask from './components/AddTask.jsx';
-import TaskList from './components/TaskList.jsx';
-import ProgressBar from './components/ProgressBar.jsx';
-import StatisticsPanel from './components/StatisticsPanel.jsx';
-import Notification from './components/Notification.jsx';
-import CompletionHistory from './components/CompletionHistory.jsx';
-import QuickAddButton from './components/QuickAddButton.jsx';
-import QuickAddModal from './components/QuickAddModal.jsx';
+import { NavLink, Route, Routes, Navigate } from 'react-router-dom';
+import Dashboard from './pages/Dashboard.jsx';
+import History from './pages/History.jsx';
+import Settings from './pages/Settings.jsx';
+import NotFound from './pages/NotFound.jsx';
 
 const LOCAL_STORAGE_KEY = 'developer-productivity-dashboard-tasks';
 
@@ -139,54 +135,76 @@ function App() {
   };
 
   return (
-    <div className="app-container">
-      <Notification message={notification} />
-      <Header
-        title="Developer Productivity Dashboard"
-        greeting={getGreeting()}
-        subtitle={`You have ${pendingCount} pending task${
-          pendingCount === 1 ? '' : 's'
-        }.`}
-      />
-      <main className="main-content">
-        <StatisticsPanel tasks={tasks} />
-        <section className="add-task-section">
-          <AddTask onAddTask={handleAddTask} />
-        </section>
-        <section className="tasks-section">
-          <h2>Tasks</h2>
-          <TaskList
-            tasks={tasks}
-            onToggleTask={handleToggleTask}
-            onDeleteTask={handleDeleteTask}
-            onUpdateTask={handleUpdateTask}
-            searchQuery={searchQuery}
-            statusFilter={statusFilter}
-            categoryFilter={categoryFilter}
-            sortBy={sortBy}
-            viewMode={viewMode}
-            onSearchChange={setSearchQuery}
-            onStatusFilterChange={setStatusFilter}
-            onCategoryFilterChange={setCategoryFilter}
-            onSortByChange={setSortBy}
-            onViewModeChange={setViewMode}
-          />
-        </section>
-        <section className="progress-section">
-          <h2>Progress</h2>
-          <ProgressBar
-            completed={completedCount}
-            total={tasks.length}
-          />
-        </section>
-        <CompletionHistory recentCompleted={recentCompleted} />
-      </main>
-      <QuickAddButton onClick={() => setIsQuickAddOpen(true)} />
-      <QuickAddModal
-        isOpen={isQuickAddOpen}
-        onClose={() => setIsQuickAddOpen(false)}
-        onQuickAdd={handleQuickAddTask}
-      />
+    <div className="app-shell">
+      <nav className="main-nav">
+        <div className="main-nav-title">Developer Productivity Dashboard</div>
+        <div className="main-nav-links">
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              `nav-link${isActive ? ' nav-link-active' : ''}`
+            }
+          >
+            Dashboard
+          </NavLink>
+          <NavLink
+            to="/history"
+            className={({ isActive }) =>
+              `nav-link${isActive ? ' nav-link-active' : ''}`
+            }
+          >
+            History
+          </NavLink>
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              `nav-link${isActive ? ' nav-link-active' : ''}`
+            }
+          >
+            Settings
+          </NavLink>
+        </div>
+      </nav>
+
+      <Routes>
+        <Route
+          path="/dashboard"
+          element={(
+            <Dashboard
+              tasks={tasks}
+              pendingCount={pendingCount}
+              completedCount={completedCount}
+              recentCompleted={recentCompleted}
+              notification={notification}
+              onAddTask={handleAddTask}
+              onQuickAddTask={handleQuickAddTask}
+              onToggleTask={handleToggleTask}
+              onDeleteTask={handleDeleteTask}
+              onUpdateTask={handleUpdateTask}
+              searchQuery={searchQuery}
+              statusFilter={statusFilter}
+              categoryFilter={categoryFilter}
+              sortBy={sortBy}
+              viewMode={viewMode}
+              onSearchChange={setSearchQuery}
+              onStatusFilterChange={setStatusFilter}
+              onCategoryFilterChange={setCategoryFilter}
+              onSortByChange={setSortBy}
+              onViewModeChange={setViewMode}
+              isQuickAddOpen={isQuickAddOpen}
+              setIsQuickAddOpen={setIsQuickAddOpen}
+              getGreeting={getGreeting}
+            />
+          )}
+        />
+        <Route
+          path="/history"
+          element={<History recentCompleted={recentCompleted} />}
+        />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </div>
   );
 }

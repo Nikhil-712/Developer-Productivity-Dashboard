@@ -23,6 +23,121 @@ body {
   min-height: 100vh;
 }
 
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(to right, #111827, #1f2937);
+  color: #f9fafb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.main-nav-title {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.main-nav-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-link {
+  color: #d1d5db;
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  transition: background-color 150ms ease, color 150ms ease, transform 100ms ease;
+}
+
+.nav-link:hover {
+  background-color: rgba(55, 65, 81, 0.7);
+  color: #f9fafb;
+  transform: translateY(-1px);
+}
+
+.nav-link-active {
+  background: linear-gradient(to right, #3b82f6, #22c55e);
+  color: #0b1120;
+}
+
+.page-container {
+  max-width: 960px;
+  margin: 1.5rem auto;
+  padding: 0 1.5rem 2rem;
+}
+
+.page-subtitle {
+  margin-top: 0.25rem;
+  color: #9ca3af;
+}
+
+.empty-state {
+  margin-top: 1rem;
+  color: #9ca3af;
+}
+
+.settings-section {
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  background-color: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(55, 65, 81, 0.9);
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.settings-row label {
+  color: #e5e7eb;
+}
+
+.settings-row select {
+  background-color: #020617;
+  color: #e5e7eb;
+  border-radius: 0.5rem;
+  border: 1px solid #374151;
+  padding: 0.35rem 0.75rem;
+}
+
+.primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.25rem;
+  border-radius: 9999px;
+  background: linear-gradient(to right, #3b82f6, #22c55e);
+  color: #020617;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.primary-button:hover {
+  filter: brightness(1.05);
+}
+
+.not-found-page {
+  text-align: center;
+}
+
 .app-container {
   min-height: 100vh;
   display: flex;
